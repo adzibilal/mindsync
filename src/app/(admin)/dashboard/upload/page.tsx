@@ -213,6 +213,7 @@ export default function UploadPage() {
       const formData = new FormData();
       formData.append("file", uploadedFile.file);
       formData.append("whatsapp_number", userData?.whatsapp_number as string);
+      formData.append("file_name", uploadedFile.file.name);
 
       // Simulate upload progress
       const progressInterval = setInterval(() => {
