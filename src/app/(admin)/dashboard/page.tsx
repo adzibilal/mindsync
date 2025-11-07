@@ -6,61 +6,95 @@ import { getUserData } from "@/utils/cookies";
 import {
   FileText,
   Upload,
-  MessageSquare,
-  TrendingUp,
-  Clock,
   CheckCircle2,
+  Loader2,
+  AlertCircle,
+  User,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+interface DocumentStats {
+  total: number;
+  completed: number;
+  processing: number;
+  error: number;
+}
 
 export default function DashboardPage() {
   const [userData, setUserData] = useState<Record<string, unknown> | null>(null);
+  const [stats, setStats] = useState<DocumentStats>({
+    total: 0,
+    completed: 0,
+    processing: 0,
+    error: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const data = getUserData();
     setUserData(data);
+    if (data?.whatsapp_number) {
+      fetchDocumentStats(data.whatsapp_number as string);
+    }
   }, []);
 
-  const stats = [
+  const fetchDocumentStats = async (whatsappNumber: string) => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `/api/documents/list?whatsapp_number=${whatsappNumber}`
+      );
+      const data = await response.json();
+
+      if (data.success && data.data) {
+        const documents = data.data;
+        setStats({
+          total: documents.length,
+          completed: documents.filter((d: { status: string }) => d.status === "completed").length,
+          processing: documents.filter((d: { status: string }) => d.status === "processing").length,
+          error: documents.filter((d: { status: string }) => d.status === "error").length,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching document stats:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const statCards = [
     {
-      title: "Total Documents",
-      value: "0",
-      description: "Documents uploaded",
+      title: "Total Dokumen",
+      value: loading ? "..." : stats.total.toString(),
+      description: "Semua dokumen",
       icon: FileText,
       color: "text-blue-600",
       bgColor: "bg-blue-100 dark:bg-blue-950",
     },
     {
-      title: "Processed",
-      value: "0",
-      description: "Successfully processed",
+      title: "Completed",
+      value: loading ? "..." : stats.completed.toString(),
+      description: "Siap digunakan",
       icon: CheckCircle2,
       color: "text-green-600",
       bgColor: "bg-green-100 dark:bg-green-950",
     },
     {
-      title: "Chat Sessions",
-      value: "0",
-      description: "Active conversations",
-      icon: MessageSquare,
-      color: "text-purple-600",
-      bgColor: "bg-purple-100 dark:bg-purple-950",
+      title: "Processing",
+      value: loading ? "..." : stats.processing.toString(),
+      description: "Sedang diproses",
+      icon: Loader2,
+      color: "text-yellow-600",
+      bgColor: "bg-yellow-100 dark:bg-yellow-950",
     },
     {
-      title: "This Month",
-      value: "0",
-      description: "Documents this month",
-      icon: TrendingUp,
-      color: "text-orange-600",
-      bgColor: "bg-orange-100 dark:bg-orange-950",
-    },
-  ];
-
-  const recentActivities = [
-    {
-      icon: Upload,
-      title: "No recent uploads",
-      description: "Upload your first document to get started",
-      time: "Just now",
+      title: "Error",
+      value: loading ? "..." : stats.error.toString(),
+      description: "Gagal diproses",
+      icon: AlertCircle,
+      color: "text-red-600",
+      bgColor: "bg-red-100 dark:bg-red-950",
     },
   ];
 
@@ -78,7 +112,7 @@ export default function DashboardPage() {
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => {
+        {statCards.map((stat) => {
           const Icon = stat.icon;
           return (
             <Card key={stat.title}>
@@ -101,82 +135,77 @@ export default function DashboardPage() {
         })}
       </div>
 
-      {/* Recent Activity */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
+      {/* Quick Actions */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card 
+          className="cursor-pointer transition-all hover:shadow-lg"
+          onClick={() => router.push("/dashboard/upload")}
+        >
           <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>
-              Your latest document management activities
-            </CardDescription>
+            <div className="flex items-center gap-3">
+              <div className="rounded-full bg-blue-100 p-3 dark:bg-blue-950">
+                <Upload className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <CardTitle className="text-lg">Upload Document</CardTitle>
+                <CardDescription>
+                  Tambah file baru
+                </CardDescription>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {recentActivities.map((activity) => {
-                const Icon = activity.icon;
-                return (
-                  <div
-                    key={activity.title}
-                    className="flex items-start space-x-4 rounded-lg border border-slate-200 p-4 dark:border-slate-800"
-                  >
-                    <div className="rounded-full bg-blue-100 p-2 dark:bg-blue-950">
-                      <Icon className="h-4 w-4 text-blue-600" />
-                    </div>
-                    <div className="flex-1 space-y-1">
-                      <p className="text-sm font-medium">{activity.title}</p>
-                      <p className="text-xs text-slate-600 dark:text-slate-400">
-                        {activity.description}
-                      </p>
-                    </div>
-                    <div className="flex items-center text-xs text-slate-600 dark:text-slate-400">
-                      <Clock className="mr-1 h-3 w-3" />
-                      {activity.time}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              Upload PDF, DOCX, atau gambar ke knowledge base kamu
+            </p>
           </CardContent>
         </Card>
 
-        {/* Quick Actions */}
-        <Card className="col-span-3">
+        <Card 
+          className="cursor-pointer transition-all hover:shadow-lg"
+          onClick={() => router.push("/dashboard/documents")}
+        >
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>
-              Common tasks to get you started
-            </CardDescription>
+            <div className="flex items-center gap-3">
+              <div className="rounded-full bg-green-100 p-3 dark:bg-green-950">
+                <FileText className="h-6 w-6 text-green-600" />
+              </div>
+              <div>
+                <CardTitle className="text-lg">View Documents</CardTitle>
+                <CardDescription>
+                  Lihat semua file
+                </CardDescription>
+              </div>
+            </div>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <button className="flex w-full items-center space-x-3 rounded-lg border border-slate-200 p-3 text-left transition-colors hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-900">
-              <Upload className="h-5 w-5 text-blue-600" />
-              <div>
-                <p className="text-sm font-medium">Upload Document</p>
-                <p className="text-xs text-slate-600 dark:text-slate-400">
-                  Add new files to your knowledge base
-                </p>
-              </div>
-            </button>
+          <CardContent>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              Kelola dan download dokumen yang sudah diupload
+            </p>
+          </CardContent>
+        </Card>
 
-            <button className="flex w-full items-center space-x-3 rounded-lg border border-slate-200 p-3 text-left transition-colors hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-900">
-              <MessageSquare className="h-5 w-5 text-purple-600" />
-              <div>
-                <p className="text-sm font-medium">Start Chat</p>
-                <p className="text-xs text-slate-600 dark:text-slate-400">
-                  Chat with your AI assistant
-                </p>
+        <Card 
+          className="cursor-pointer transition-all hover:shadow-lg"
+          onClick={() => router.push("/dashboard/persona")}
+        >
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="rounded-full bg-purple-100 p-3 dark:bg-purple-950">
+                <User className="h-6 w-6 text-purple-600" />
               </div>
-            </button>
-
-            <button className="flex w-full items-center space-x-3 rounded-lg border border-slate-200 p-3 text-left transition-colors hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-900">
-              <FileText className="h-5 w-5 text-green-600" />
               <div>
-                <p className="text-sm font-medium">View Documents</p>
-                <p className="text-xs text-slate-600 dark:text-slate-400">
-                  Browse your uploaded files
-                </p>
+                <CardTitle className="text-lg">AI Persona</CardTitle>
+                <CardDescription>
+                  Atur persona AI
+                </CardDescription>
               </div>
-            </button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              Customize personality dan behavior AI assistant kamu
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -190,35 +219,35 @@ export default function DashboardPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="space-y-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-950">
+          <div className="grid gap-6 md:grid-cols-3">
+            <div className="space-y-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-lg font-bold text-blue-600 dark:bg-blue-950">
                 1
               </div>
-              <h3 className="font-semibold">Upload Documents</h3>
+              <h3 className="text-lg font-semibold">Upload Documents</h3>
               <p className="text-sm text-slate-600 dark:text-slate-400">
-                Start by uploading your documents, PDFs, or text files to build
-                your knowledge base.
+                Start by uploading your documents, PDFs, images, or text files to build
+                your knowledge base. Mendukung OCR untuk gambar!
               </p>
             </div>
-            <div className="space-y-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-100 text-purple-600 dark:bg-purple-950">
+            <div className="space-y-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-100 text-lg font-bold text-purple-600 dark:bg-purple-950">
                 2
               </div>
-              <h3 className="font-semibold">Configure AI Persona</h3>
+              <h3 className="text-lg font-semibold">Configure AI Persona</h3>
               <p className="text-sm text-slate-600 dark:text-slate-400">
                 Customize your AI assistant&apos;s personality and behavior to match your
-                needs.
+                needs. Buat AI kamu punya karakter unik!
               </p>
             </div>
-            <div className="space-y-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 text-green-600 dark:bg-green-950">
+            <div className="space-y-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-lg font-bold text-green-600 dark:bg-green-950">
                 3
               </div>
-              <h3 className="font-semibold">Start Chatting</h3>
+              <h3 className="text-lg font-semibold">Start Chatting</h3>
               <p className="text-sm text-slate-600 dark:text-slate-400">
                 Use WhatsApp to chat with your AI assistant and access your
-                documents anytime.
+                documents anytime, anywhere. Chat sepuasnya!
               </p>
             </div>
           </div>
@@ -227,4 +256,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-

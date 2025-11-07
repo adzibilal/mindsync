@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { getUserData } from "@/utils/cookies";
-import { createClient } from "@supabase/supabase-js";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,16 +30,13 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
 interface Document {
   id: string;
   user_whatsapp_number: string;
   file_name: string;
   status: "uploaded" | "processing" | "completed" | "error";
   uploaded_at: string;
+  file_url?: string;
   chunksCount?: number;
 }
 
@@ -111,29 +107,18 @@ export default function DocumentsPage() {
   const handleDownload = async (doc: Document) => {
     try {
       setDownloadingId(doc.id);
-      const storagePath = `${whatsappNumber}/${doc.file_name}`;
       
-      // Get signed URL (valid for 60 seconds)
-      const { data, error } = await supabase.storage
-        .from("mindsync_storage")
-        .createSignedUrl(storagePath, 60);
-
-      if (error) {
-        console.error("Signed URL error:", error);
-        toast.error(`Gagal mengunduh file: ${error.message}`);
+      // Check if file_url exists
+      if (!doc.file_url) {
+        toast.error("URL file tidak ditemukan");
         return;
       }
 
-      if (!data?.signedUrl) {
-        toast.error("Gagal mendapatkan URL download");
-        return;
-      }
-
-      // Download using signed URL
-      const response = await fetch(data.signedUrl);
+      // Download directly from Cloudinary URL
+      const response = await fetch(doc.file_url);
       
       if (!response.ok) {
-        toast.error("Gagal mengunduh file dari storage");
+        toast.error("Gagal mengunduh file dari Cloudinary");
         return;
       }
 

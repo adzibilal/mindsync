@@ -13,7 +13,10 @@ import {
   Loader2, 
   CheckCircle2,
   Bot,
-  RefreshCw
+  RefreshCw,
+  AlertCircle,
+  Info,
+  Lightbulb
 } from "lucide-react";
 import { toast } from "sonner";
 import { getUserData } from "@/utils/cookies";
@@ -33,6 +36,7 @@ export default function PersonaPage() {
   const [saving, setSaving] = useState(false);
   const [currentPersona, setCurrentPersona] = useState<CameoPersona | null>(null);
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   
   // Form state
   const [formData, setFormData] = useState({
@@ -45,12 +49,27 @@ export default function PersonaPage() {
   const userData = getUserData();
   const whatsappNumber = userData?.whatsapp_number as string;
 
+  // Character limits
+  const MAX_PROMPT_LENGTH = 2000;
+  const MIN_PROMPT_LENGTH = 10;
+
   // Fetch current persona
   useEffect(() => {
     if (whatsappNumber) {
       fetchPersona();
     }
   }, [whatsappNumber]);
+
+  // Track unsaved changes
+  useEffect(() => {
+    if (currentPersona) {
+      const hasChanges = 
+        formData.cameo_name !== currentPersona.cameo_name ||
+        formData.system_prompt !== currentPersona.system_prompt ||
+        formData.image_url !== (currentPersona.image_url || "");
+      setHasUnsavedChanges(hasChanges);
+    }
+  }, [formData, currentPersona]);
 
   const fetchPersona = async () => {
     try {
@@ -89,13 +108,19 @@ export default function PersonaPage() {
   };
 
   const handleSave = async () => {
+    // Validation
     if (!formData.cameo_name.trim()) {
       toast.error("Nama persona harus diisi!");
       return;
     }
 
-    if (!formData.system_prompt.trim() || formData.system_prompt.length < 10) {
-      toast.error("System prompt minimal 10 karakter!");
+    if (!formData.system_prompt.trim() || formData.system_prompt.length < MIN_PROMPT_LENGTH) {
+      toast.error(`System prompt minimal ${MIN_PROMPT_LENGTH} karakter!`);
+      return;
+    }
+
+    if (formData.system_prompt.length > MAX_PROMPT_LENGTH) {
+      toast.error(`System prompt maksimal ${MAX_PROMPT_LENGTH} karakter!`);
       return;
     }
 
@@ -118,6 +143,7 @@ export default function PersonaPage() {
         toast.success(data.message);
         fetchPersona();
         setSelectedPreset(null);
+        setHasUnsavedChanges(false);
       } else {
         toast.error(data.error || "Gagal menyimpan persona");
       }
@@ -158,6 +184,9 @@ export default function PersonaPage() {
     }
   };
 
+  const promptLength = formData.system_prompt.length;
+  const isPromptValid = promptLength >= MIN_PROMPT_LENGTH && promptLength <= MAX_PROMPT_LENGTH;
+
   if (loading) {
     return (
       <div className="flex h-96 items-center justify-center">
@@ -171,196 +200,259 @@ export default function PersonaPage() {
       {/* Header */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
-              <Bot className="h-6 w-6 text-white" />
+          <div className="flex items-center gap-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 shadow-lg">
+              <Bot className="h-7 w-7 text-white" />
             </div>
             <div>
               <h2 className="text-3xl font-bold tracking-tight">AI Persona</h2>
               <p className="text-slate-600 dark:text-slate-400">
-                Atur kepribadian asisten AI kamu ✨
+                Customize kepribadian asisten AI kamu ✨
               </p>
             </div>
           </div>
-          {currentPersona && (
-            <Badge
-              variant={formData.status ? "default" : "secondary"}
-              className="text-sm"
-            >
-              {formData.status ? "Aktif" : "Nonaktif"}
-            </Badge>
-          )}
+          <div className="flex items-center gap-2">
+            {hasUnsavedChanges && (
+              <Badge variant="outline" className="border-orange-300 text-orange-600">
+                <AlertCircle className="mr-1 h-3 w-3" />
+                Unsaved
+              </Badge>
+            )}
+            {currentPersona && (
+              <Badge
+                variant={formData.status ? "default" : "secondary"}
+                className={formData.status ? "bg-green-600" : ""}
+              >
+                {formData.status ? "Aktif" : "Nonaktif"}
+              </Badge>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Preset Personas */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-yellow-600" />
-            Pilih Preset Persona
-          </CardTitle>
-          <CardDescription>
-            Klik salah satu preset di bawah untuk mulai dengan cepat, atau buat custom persona sendiri
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {PERSONA_PRESETS.map((preset) => (
-              <Card
-                key={preset.id}
-                className={`cursor-pointer transition-all hover:shadow-md ${
-                  selectedPreset === preset.id
-                    ? "border-blue-500 ring-2 ring-blue-200 dark:border-blue-600 dark:ring-blue-900"
-                    : "border-slate-200 hover:border-blue-300 dark:border-slate-800"
-                }`}
-                onClick={() => handlePresetSelect(preset)}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-3">
-                    <div className="text-3xl">{preset.emoji}</div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold">{preset.name}</h4>
-                      <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
-                        {preset.description}
-                      </p>
+      {/* Main Layout - 2 Columns on Desktop */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Left Column - Presets */}
+        <div className="space-y-6 lg:col-span-1">
+          {/* Preset Personas */}
+          <Card className="flex flex-col lg:h-[calc(100vh-16rem)]">
+            <CardHeader className="flex-shrink-0">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Sparkles className="h-5 w-5 text-yellow-600" />
+                Preset Personas
+              </CardTitle>
+              <CardDescription className="text-xs">
+                Pilih template untuk memulai dengan cepat
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex-1 space-y-3 overflow-y-auto">
+              {PERSONA_PRESETS.map((preset) => (
+                <Card
+                  key={preset.id}
+                  className={`cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-md ${
+                    selectedPreset === preset.id
+                      ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200 dark:border-blue-600 dark:bg-blue-950/30 dark:ring-blue-900"
+                      : "border-slate-200 hover:border-blue-300 dark:border-slate-800"
+                  }`}
+                  onClick={() => handlePresetSelect(preset)}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="text-2xl">{preset.emoji}</div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-sm">{preset.name}</h4>
+                        <p className="mt-1 text-xs text-slate-600 dark:text-slate-400 line-clamp-2">
+                          {preset.description}
+                        </p>
+                      </div>
                     </div>
+                    {selectedPreset === preset.id && (
+                      <div className="mt-2 flex items-center gap-1 text-xs font-medium text-blue-600 dark:text-blue-400">
+                        <CheckCircle2 className="h-3 w-3" />
+                        Terpilih
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* Tips Card */}
+          <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50 dark:border-blue-900 dark:from-blue-950/20 dark:to-purple-950/20">
+            <CardContent className="p-5">
+              <div className="flex items-start gap-3">
+                <div className="rounded-full bg-blue-100 p-2 dark:bg-blue-900">
+                  <Lightbulb className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div className="flex-1 space-y-2">
+                  <h4 className="font-semibold text-sm">Tips Membuat Persona</h4>
+                  <ul className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-600">•</span>
+                      <span>Jelaskan tone dan style komunikasi yang diinginkan</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-600">•</span>
+                      <span>Sebutkan kata-kata atau frasa yang sering digunakan</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-600">•</span>
+                      <span>Berikan contoh cara merespon dalam berbagai situasi</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-600">•</span>
+                      <span>Tentukan hal-hal yang harus dihindari</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column - Form */}
+        <div className="space-y-6 lg:col-span-2">
+          {/* Form Edit Persona */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Konfigurasi Persona</CardTitle>
+              <CardDescription>
+                Edit dan sesuaikan persona sesuai kebutuhan kamu
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Nama Persona */}
+              <div className="space-y-2">
+                <Label htmlFor="cameo_name" className="text-sm font-medium">
+                  Nama Persona *
+                </Label>
+                <Input
+                  id="cameo_name"
+                  placeholder="Misal: Mini, Assistant Pro, Jarvis, dll"
+                  value={formData.cameo_name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, cameo_name: e.target.value })
+                  }
+                  className="transition-all focus:ring-2 focus:ring-blue-200"
+                />
+                <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                  <Info className="h-3 w-3" />
+                  <span>Nama persona yang akan muncul saat berkomunikasi</span>
+                </div>
+              </div>
+
+              {/* System Prompt */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="system_prompt" className="text-sm font-medium">
+                    System Prompt *
+                  </Label>
+                  <span
+                    className={`text-xs font-medium ${
+                      !isPromptValid
+                        ? "text-red-600"
+                        : promptLength > MAX_PROMPT_LENGTH * 0.9
+                        ? "text-orange-600"
+                        : "text-slate-500"
+                    }`}
+                  >
+                    {promptLength} / {MAX_PROMPT_LENGTH}
+                  </span>
+                </div>
+                <Textarea
+                  id="system_prompt"
+                  placeholder="Contoh: Kamu adalah asisten AI yang ramah dan helpful. Kamu berkomunikasi dengan bahasa Indonesia yang santai tapi tetap sopan. Kamu suka menggunakan emoji untuk membuat percakapan lebih menarik..."
+                  value={formData.system_prompt}
+                  onChange={(e) =>
+                    setFormData({ ...formData, system_prompt: e.target.value })
+                  }
+                  rows={14}
+                  className={`font-mono text-sm transition-all focus:ring-2 ${
+                    isPromptValid
+                      ? "focus:ring-blue-200"
+                      : "border-red-300 focus:ring-red-200"
+                  }`}
+                />
+                <div className="flex items-start gap-1.5 text-xs text-slate-500">
+                  <Info className="h-3 w-3 mt-0.5" />
+                  <span>
+                    Instruksi detail tentang bagaimana AI harus berperilaku dan berkomunikasi 
+                    (minimal {MIN_PROMPT_LENGTH} karakter, maksimal {MAX_PROMPT_LENGTH} karakter)
+                  </span>
+                </div>
+                {!isPromptValid && promptLength > 0 && (
+                  <div className="flex items-center gap-1.5 text-xs text-red-600">
+                    <AlertCircle className="h-3 w-3" />
+                    <span>
+                      {promptLength < MIN_PROMPT_LENGTH
+                        ? `Tambah ${MIN_PROMPT_LENGTH - promptLength} karakter lagi`
+                        : `Kurangi ${promptLength - MAX_PROMPT_LENGTH} karakter`}
+                    </span>
                   </div>
-                  {selectedPreset === preset.id && (
-                    <div className="mt-2 flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400">
-                      <CheckCircle2 className="h-3 w-3" />
-                      Terpilih
-                    </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap gap-3 pt-4 border-t">
+                <Button
+                  onClick={handleSave}
+                  disabled={saving || !isPromptValid || !formData.cameo_name.trim()}
+                  className="bg-blue-600 hover:bg-blue-700 shadow-md"
+                >
+                  {saving ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Menyimpan...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="mr-2 h-4 w-4" />
+                      Simpan Persona
+                    </>
                   )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Form Edit Persona */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Konfigurasi Persona</CardTitle>
-          <CardDescription>
-            Edit dan sesuaikan persona sesuai kebutuhan kamu
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Nama Persona */}
-          <div className="space-y-2">
-            <Label htmlFor="cameo_name">Nama Persona *</Label>
-            <Input
-              id="cameo_name"
-              placeholder="Misal: Mini, Assistant Pro, dll"
-              value={formData.cameo_name}
-              onChange={(e) =>
-                setFormData({ ...formData, cameo_name: e.target.value })
-              }
-            />
-            <p className="text-xs text-slate-500">
-              Nama persona yang akan muncul saat berkomunikasi
-            </p>
-          </div>
-
-          {/* System Prompt */}
-          <div className="space-y-2">
-            <Label htmlFor="system_prompt">System Prompt *</Label>
-            <Textarea
-              id="system_prompt"
-              placeholder="Deskripsi lengkap tentang karakteristik dan cara berkomunikasi persona..."
-              value={formData.system_prompt}
-              onChange={(e) =>
-                setFormData({ ...formData, system_prompt: e.target.value })
-              }
-              rows={12}
-              className="font-mono text-sm"
-            />
-            <p className="text-xs text-slate-500">
-              Instruksi detail tentang bagaimana AI harus berperilaku dan berkomunikasi (minimal 10 karakter)
-            </p>
-          </div>
-
-          {/* Image URL (Optional) */}
-          {/* <div className="space-y-2">
-            <Label htmlFor="image_url">Image URL (Opsional)</Label>
-            <Input
-              id="image_url"
-              type="url"
-              placeholder="https://example.com/avatar.png"
-              value={formData.image_url}
-              onChange={(e) =>
-                setFormData({ ...formData, image_url: e.target.value })
-              }
-            />
-            <p className="text-xs text-slate-500">
-              URL gambar untuk avatar persona
-            </p>
-          </div> */}
-
-          {/* Action Buttons */}
-          <div className="flex flex-wrap gap-3 pt-4">
-            <Button
-              onClick={handleSave}
-              disabled={saving}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              {saving ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Menyimpan...
-                </>
-              ) : (
-                <>
-                  <Save className="mr-2 h-4 w-4" />
-                  Simpan Persona
-                </>
-              )}
-            </Button>
-
-            {currentPersona && (
-              <>
-                <Button
-                  onClick={handleToggleStatus}
-                  variant={formData.status ? "outline" : "default"}
-                >
-                  {formData.status ? "Nonaktifkan" : "Aktifkan"}
                 </Button>
 
-                <Button
-                  onClick={fetchPersona}
-                  variant="outline"
-                >
-                  <RefreshCw className="mr-2 h-4 w-4" />
-                  Reset
-                </Button>
-              </>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+                {currentPersona && (
+                  <>
+                    <Button
+                      onClick={handleToggleStatus}
+                      variant={formData.status ? "outline" : "default"}
+                      className={!formData.status ? "bg-green-600 hover:bg-green-700" : ""}
+                    >
+                      {formData.status ? "Nonaktifkan" : "Aktifkan"}
+                    </Button>
 
-      {/* Info Card */}
-      <Card className="border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50 dark:border-blue-900 dark:from-blue-950/20 dark:to-purple-950/20">
-        <CardContent className="p-6">
-          <div className="flex items-start gap-3">
-            <div className="text-2xl">💡</div>
-            <div className="flex-1 space-y-2">
-              <h4 className="font-semibold">Tips Membuat Persona</h4>
-              <ul className="space-y-1 text-sm text-slate-700 dark:text-slate-300">
-                <li>• Jelaskan tone dan style komunikasi yang diinginkan</li>
-                <li>• Sebutkan kata-kata atau frasa yang sering digunakan</li>
-                <li>• Berikan contoh cara merespon dalam berbagai situasi</li>
-                <li>• Tentukan hal-hal yang harus dihindari</li>
-                <li>• Satu user hanya bisa memiliki satu persona aktif</li>
-              </ul>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+                    <Button
+                      onClick={fetchPersona}
+                      variant="outline"
+                      disabled={!hasUnsavedChanges}
+                    >
+                      <RefreshCw className="mr-2 h-4 w-4" />
+                      Reset
+                    </Button>
+                  </>
+                )}
+              </div>
+            </CardContent>
+          </Card>
 
+          {/* Info Banner */}
+          {currentPersona && (
+            <Card className="border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/50">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3 text-sm">
+                  <Info className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                  <p className="text-slate-700 dark:text-slate-300">
+                    Persona ini akan digunakan untuk semua percakapan WhatsApp kamu. 
+                    Perubahan akan berlaku untuk chat berikutnya.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
-
