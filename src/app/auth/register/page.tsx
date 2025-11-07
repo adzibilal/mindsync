@@ -154,22 +154,22 @@ export default function RegisterPage() {
   };
 
   return (
-    <Card className="shadow-2xl border-slate-200 dark:border-slate-700">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
-        <CardDescription>
-          Join Mindsync and start managing your documents smarter
+    <Card className="bg-slate-900/80 backdrop-blur-sm border-slate-700 shadow-2xl shadow-blue-500/10">
+      <CardHeader className="space-y-2">
+        <CardTitle className="text-3xl font-bold text-white">Create Account 🚀</CardTitle>
+        <CardDescription className="text-slate-300 text-base">
+          Join MindSync and start managing your documents smarter
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-5">
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 rounded-md text-sm">
+            <div className="bg-red-500/10 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg text-sm backdrop-blur-sm">
               {error}
             </div>
           )}
           <div className="space-y-2">
-            <Label htmlFor="name">Full Name</Label>
+            <Label htmlFor="name" className="text-slate-200">Full Name</Label>
             <Input
               id="name"
               type="text"
@@ -178,10 +178,11 @@ export default function RegisterPage() {
               onChange={handleChange}
               required
               disabled={isLoading}
+              className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-500 focus:border-blue-500 focus:ring-blue-500/20"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-slate-200">Email</Label>
             <Input
               id="email"
               type="email"
@@ -190,12 +191,13 @@ export default function RegisterPage() {
               onChange={handleChange}
               required
               disabled={isLoading}
+              className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-500 focus:border-blue-500 focus:ring-blue-500/20"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="whatsappNumber">WhatsApp Number</Label>
+            <Label htmlFor="whatsappNumber" className="text-slate-200">WhatsApp Number</Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
                 +
               </span>
               <Input
@@ -206,32 +208,32 @@ export default function RegisterPage() {
                 onChange={handleWhatsAppChange}
                 required
                 disabled={isLoading}
-                className="pl-7"
+                className="pl-7 bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-500 focus:border-blue-500 focus:ring-blue-500/20"
                 pattern="62[0-9]{9,13}"
               />
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Enter your number with country code (e.g., 62812345678 for Indonesia)
+            <p className="text-xs text-slate-400">
+              Enter your number with country code (e.g., 62812345678)
             </p>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-start space-x-3 bg-slate-800/30 border border-slate-700 rounded-lg p-3">
             <input
               type="checkbox"
               id="terms"
               checked={agreedToTerms}
               onChange={(e) => setAgreedToTerms(e.target.checked)}
-              className="w-4 h-4 rounded border-slate-300 dark:border-slate-600"
+              className="w-4 h-4 mt-0.5 rounded border-slate-600 bg-slate-700 text-blue-600 focus:ring-blue-500 focus:ring-offset-slate-900"
               disabled={isLoading}
             />
             <Label 
               htmlFor="terms" 
-              className="text-sm font-normal cursor-pointer"
+              className="text-sm font-normal cursor-pointer text-slate-300 leading-relaxed"
             >
               I agree to the{" "}
               <Link 
                 href="/terms" 
-                className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                className="text-blue-400 hover:text-blue-300 underline-offset-4 hover:underline"
               >
                 terms and conditions
               </Link>
@@ -241,36 +243,41 @@ export default function RegisterPage() {
         <CardFooter className="flex flex-col space-y-4 mt-4">
           <Button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/50 hover:shadow-blue-500/70 transition-all h-11"
             disabled={isLoading}
           >
             {isLoading ? "Creating account..." : "Create Account"}
           </Button>
 
-          <p className="text-center text-sm text-slate-600 dark:text-slate-400">
-            Already have an account?{" "}
-            <Link
-              href="/auth/login"
-              className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-            >
-              Sign in
+          <div className="border-t border-slate-700 pt-4 space-y-3">
+            <p className="text-center text-sm text-slate-300">
+              Already have an account?{" "}
+              <Link
+                href="/auth/login"
+                className="font-semibold text-blue-400 hover:text-blue-300 underline-offset-4 hover:underline"
+              >
+                Sign in
+              </Link>
+            </p>
+            <Link href="/" className="block text-center text-sm text-slate-400 hover:text-slate-300 transition-colors">
+              ← Back to home
             </Link>
-          </p>
+          </div>
         </CardFooter>
       </form>
 
       {/* WhatsApp Confirmation Dialog */}
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-slate-900 border-slate-700">
           <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <Phone className="h-5 w-5 text-blue-600" />
+            <AlertDialogTitle className="flex items-center gap-2 text-white">
+              <Phone className="h-5 w-5 text-blue-400" />
               Konfirmasi Nomor WhatsApp
             </AlertDialogTitle>
-            <AlertDialogDescription className="space-y-3 pt-2">
+            <AlertDialogDescription className="space-y-3 pt-2 text-slate-300">
               <p>Pastikan nomor WhatsApp Anda sudah benar:</p>
-              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                <p className="text-center text-2xl font-bold text-blue-600 dark:text-blue-400">
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+                <p className="text-center text-2xl font-bold text-blue-400">
                   +{formData.whatsappNumber}
                 </p>
               </div>
@@ -281,12 +288,13 @@ export default function RegisterPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isLoading}>
+            <AlertDialogCancel disabled={isLoading} className="bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700">
               Ubah Nomor
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmRegistration}
               disabled={isLoading}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               {isLoading ? "Processing..." : "Ya, Nomor Sudah Benar"}
             </AlertDialogAction>
@@ -296,34 +304,34 @@ export default function RegisterPage() {
 
       {/* Success Dialog */}
       <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-slate-900 border-slate-700">
           <DialogHeader>
             <div className="flex justify-center mb-4">
-              <div className="rounded-full bg-green-100 dark:bg-green-900/20 p-3">
-                <CheckCircle2 className="h-12 w-12 text-green-600 dark:text-green-400" />
+              <div className="rounded-full bg-green-500/20 p-3">
+                <CheckCircle2 className="h-12 w-12 text-green-400" />
               </div>
             </div>
-            <DialogTitle className="text-center text-2xl">
+            <DialogTitle className="text-center text-2xl text-white">
               Registrasi Berhasil! 🎉
             </DialogTitle>
-            <DialogDescription className="text-center space-y-4 pt-4">
+            <DialogDescription className="text-center space-y-4 pt-4 text-slate-300">
               <p className="text-base">
                 Akun Anda telah berhasil dibuat dengan nomor WhatsApp:
               </p>
-              <div className="bg-slate-100 dark:bg-slate-800 rounded-lg p-3">
-                <p className="font-semibold text-lg text-slate-900 dark:text-slate-100">
+              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-3">
+                <p className="font-semibold text-lg text-blue-400">
                   +{formData.whatsappNumber}
                 </p>
               </div>
-              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 space-y-2">
-                <p className="font-semibold text-blue-900 dark:text-blue-100">
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 space-y-2">
+                <p className="font-semibold text-blue-300">
                   Langkah Selanjutnya:
                 </p>
-                <ol className="list-decimal list-inside text-left space-y-1 text-sm text-blue-800 dark:text-blue-200">
+                <ol className="list-decimal list-inside text-left space-y-1 text-sm text-slate-300">
                   <li>Klik tombol &ldquo;Login Sekarang&rdquo; di bawah</li>
                   <li>Masukkan nomor WhatsApp Anda</li>
                   <li>Masukkan kode OTP yang dikirim ke WhatsApp</li>
-                  <li>Mulai gunakan Mindsync! 🚀</li>
+                  <li>Mulai gunakan MindSync! 🚀</li>
                 </ol>
               </div>
             </DialogDescription>
@@ -331,7 +339,7 @@ export default function RegisterPage() {
           <div className="flex flex-col gap-2 pt-4">
             <Button
               onClick={handleSuccessDialogClose}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/50"
             >
               Login Sekarang
             </Button>

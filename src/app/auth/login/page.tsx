@@ -138,24 +138,24 @@ export default function LoginPage() {
     };
 
     return (
-        <Card className="shadow-2xl border-slate-200 dark:border-slate-700">
-            <CardHeader className="space-y-1">
-                <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
-                <CardDescription>
-                    Enter your WhatsApp number to receive an OTP and access your account
+        <Card className="bg-slate-900/80 backdrop-blur-sm border-slate-700 shadow-2xl shadow-blue-500/10">
+            <CardHeader className="space-y-2">
+                <CardTitle className="text-3xl font-bold text-white">Welcome Back! 👋</CardTitle>
+                <CardDescription className="text-slate-300 text-base">
+                    Enter your WhatsApp number to receive an OTP
                 </CardDescription>
             </CardHeader>
             <form onSubmit={handleSubmit}>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-5">
                     {error && (
-                        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 rounded-md text-sm">
+                        <div className="bg-red-500/10 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg text-sm backdrop-blur-sm">
                             {error}
                         </div>
                     )}
                     <div className="space-y-2">
-                        <Label htmlFor="whatsappNumber">WhatsApp Number</Label>
+                        <Label htmlFor="whatsappNumber" className="text-slate-200">WhatsApp Number</Label>
                         <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
                                 +
                             </span>
                             <Input
@@ -166,12 +166,12 @@ export default function LoginPage() {
                                 onChange={handleWhatsAppChange}
                                 required
                                 disabled={isLoading || isOtpSent}
-                                className="pl-7"
+                                className="pl-7 bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-500 focus:border-blue-500 focus:ring-blue-500/20"
                                 pattern="62[0-9]{9,13}"
                             />
                         </div>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                            Enter your number with country code (e.g., 62812345678 for Indonesia)
+                        <p className="text-xs text-slate-400">
+                            Enter your number with country code (e.g., 62812345678)
                         </p>
                     </div>
 
@@ -179,23 +179,23 @@ export default function LoginPage() {
                         <Button
                             type="button"
                             onClick={handleSendOtp}
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/50 hover:shadow-blue-500/70 transition-all h-11"
                             disabled={isLoading}
                         >
-                            {isLoading ? "Sending OTP..." : "Send OTP"}
+                            {isLoading ? "Sending OTP..." : "Send OTP via WhatsApp"}
                         </Button>
                     ) : (
                         <>
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between">
-                                    <Label htmlFor="otp">OTP Code</Label>
+                                    <Label htmlFor="otp" className="text-slate-200">OTP Code</Label>
                                     <button
                                         type="button"
                                         onClick={() => {
                                             setIsOtpSent(false);
                                             setOtp("");
                                         }}
-                                        className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                                        className="text-sm text-blue-400 hover:text-blue-300 underline-offset-4 hover:underline"
                                     >
                                         Change number
                                     </button>
@@ -210,19 +210,20 @@ export default function LoginPage() {
                                     disabled={isLoading}
                                     maxLength={6}
                                     pattern="[0-9]{6}"
+                                    className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-500 focus:border-blue-500 focus:ring-blue-500/20 text-center text-lg tracking-widest"
                                 />
-                                <p className="text-xs text-slate-500 dark:text-slate-400">
-                                    OTP has been sent to your WhatsApp number
+                                <p className="text-xs text-slate-400">
+                                    Check your WhatsApp for the 6-digit code
                                 </p>
                             </div>
                             <Button
                                 type="submit"
-                                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                                className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/50 hover:shadow-blue-500/70 transition-all h-11"
                                 disabled={isLoading}
                             >
                                 {isLoading ? (
                                     <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                                         Verifying...
                                     </>
                                 ) : (
@@ -232,17 +233,19 @@ export default function LoginPage() {
                         </>
                     )}
                 </CardContent>
-                <CardFooter className="flex flex-col space-y-4 mt-4">
-
-                    <p className="text-center text-sm text-slate-600 dark:text-slate-400">
+                <CardFooter className="flex flex-col space-y-4 mt-4 border-t border-slate-700 pt-6">
+                    <p className="text-center text-sm text-slate-300">
                         Don&apos;t have an account?{" "}
                         <Link
                             href="/auth/register"
-                            className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                            className="font-semibold text-blue-400 hover:text-blue-300 underline-offset-4 hover:underline"
                         >
-                            Sign up
+                            Create account
                         </Link>
                     </p>
+                    <Link href="/" className="text-center text-sm text-slate-400 hover:text-slate-300 transition-colors">
+                        ← Back to home
+                    </Link>
                 </CardFooter>
             </form>
         </Card>

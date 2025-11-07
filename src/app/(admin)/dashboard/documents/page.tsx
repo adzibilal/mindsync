@@ -29,6 +29,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { GlassCard } from "@/components/ui/glass-card";
+import { motion } from "framer-motion";
 
 interface Document {
   id: string;
@@ -253,7 +255,12 @@ export default function DocumentsPage() {
   if (loading) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        >
+          <Loader2 className="h-8 w-8 text-blue-600" />
+        </motion.div>
       </div>
     );
   }
@@ -263,14 +270,16 @@ export default function DocumentsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Documents</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+            Documents
+          </h2>
           <p className="text-slate-600 dark:text-slate-400">
             Kelola semua dokumen kamu di sini
           </p>
         </div>
         <Button
           onClick={() => (window.location.href = "/dashboard/upload")}
-          className="bg-blue-600 hover:bg-blue-700"
+          className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700"
         >
           <UploadIcon className="mr-2 h-4 w-4" />
           Upload Dokumen
@@ -280,178 +289,174 @@ export default function DocumentsPage() {
       {/* Stats */}
       <div className="grid gap-4 md:grid-cols-4">
         {stats.map((stat) => (
-          <Card key={stat.label}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                    {stat.label}
-                  </p>
-                  <p className={`text-2xl font-bold ${stat.color}`}>
-                    {stat.value}
-                  </p>
+          <GlassCard key={stat.label} className="h-full transition-shadow hover:shadow-md">
+            <Card className="border-0 bg-transparent shadow-none">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                      {stat.label}
+                    </p>
+                    <p className={`text-2xl font-bold ${stat.color}`}>
+                      {stat.value}
+                    </p>
+                  </div>
+                  <div className={`rounded-full p-3 ${stat.bgColor}`}>
+                    <FileText className={`h-5 w-5 ${stat.color}`} />
+                  </div>
                 </div>
-                <div className={`rounded-full p-3 ${stat.bgColor}`}>
-                  <FileText className={`h-5 w-5 ${stat.color}`} />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </GlassCard>
         ))}
       </div>
 
       {/* Filters */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            {/* Search */}
-            <div className="relative flex-1 md:max-w-sm">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <Input
-                placeholder="Cari nama dokumen..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9"
-              />
-            </div>
+      <GlassCard>
+        <Card className="border-0 bg-transparent shadow-none">
+          <CardContent className="p-6">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              {/* Search */}
+              <div className="relative flex-1 md:max-w-sm">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Input
+                  placeholder="Cari nama dokumen..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
 
-            {/* Status Filter */}
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-slate-400" />
-              <div className="flex gap-2">
-                <Button
-                  variant={statusFilter === "all" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setStatusFilter("all")}
-                >
-                  Semua
-                </Button>
-                <Button
-                  variant={statusFilter === "completed" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setStatusFilter("completed")}
-                >
-                  Completed
-                </Button>
-                <Button
-                  variant={statusFilter === "processing" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setStatusFilter("processing")}
-                >
-                  Processing
-                </Button>
-                <Button
-                  variant={statusFilter === "error" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setStatusFilter("error")}
-                >
-                  Error
-                </Button>
+              {/* Status Filter */}
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4 text-slate-400 dark:text-slate-500" />
+                <div className="flex gap-2 flex-wrap">
+                  {[
+                    { value: "all", label: "Semua" },
+                    { value: "completed", label: "Completed" },
+                    { value: "processing", label: "Processing" },
+                    { value: "error", label: "Error" },
+                  ].map((filter) => (
+                    <Button
+                      key={filter.value}
+                      variant={statusFilter === filter.value ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setStatusFilter(filter.value as StatusFilter)}
+                      className={statusFilter === filter.value ? "bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700" : ""}
+                    >
+                      {filter.label}
+                    </Button>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </GlassCard>
 
       {/* Documents List */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Daftar Dokumen</CardTitle>
-          <CardDescription>
-            {filteredDocuments.length} dari {documents.length} dokumen
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {filteredDocuments.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <FileText className="mb-4 h-12 w-12 text-slate-400" />
-              <h3 className="mb-2 text-lg font-semibold">
-                {searchQuery || statusFilter !== "all"
-                  ? "Tidak ada dokumen yang cocok"
-                  : "Belum ada dokumen"}
-              </h3>
-              <p className="mb-4 text-sm text-slate-600 dark:text-slate-400">
-                {searchQuery || statusFilter !== "all"
-                  ? "Coba ubah filter atau kata kunci pencarian"
-                  : "Upload dokumen pertama kamu untuk mulai"}
-              </p>
-              {!searchQuery && statusFilter === "all" && (
-                <Button
-                  onClick={() => (window.location.href = "/dashboard/upload")}
-                >
-                  <UploadIcon className="mr-2 h-4 w-4" />
-                  Upload Sekarang
-                </Button>
-              )}
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {filteredDocuments.map((doc) => {
-                const statusConfig = getStatusConfig(doc.status);
-                const StatusIcon = statusConfig.icon;
-                const FileIcon = getFileIcon();
-
-                return (
-                  <div
-                    key={doc.id}
-                    className="flex items-center justify-between rounded-lg border border-slate-200 p-4 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-900"
+      <GlassCard>
+        <Card className="border-0 bg-transparent shadow-none">
+          <CardHeader>
+            <CardTitle className="text-xl text-slate-900 dark:text-white">
+              Daftar Dokumen
+            </CardTitle>
+            <CardDescription>
+              {filteredDocuments.length} dari {documents.length} dokumen
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {filteredDocuments.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <FileText className="mb-4 h-12 w-12 text-slate-400 dark:text-slate-500" />
+                <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">
+                  {searchQuery || statusFilter !== "all"
+                    ? "Tidak ada dokumen yang cocok"
+                    : "Belum ada dokumen"}
+                </h3>
+                <p className="mb-4 text-sm text-slate-600 dark:text-slate-400">
+                  {searchQuery || statusFilter !== "all"
+                    ? "Coba ubah filter atau kata kunci pencarian"
+                    : "Upload dokumen pertama kamu untuk mulai"}
+                </p>
+                {!searchQuery && statusFilter === "all" && (
+                  <Button
+                    onClick={() => (window.location.href = "/dashboard/upload")}
+                    className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700"
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-950">
-                        <FileIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                      </div>
-                      <div>
-                        <h4 className="font-medium">{doc.file_name}</h4>
-                        <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
-                          <span>{formatDate(doc.uploaded_at)}</span>
-                          {doc.chunksCount !== undefined && (
-                            <span>• {doc.chunksCount} chunks</span>
-                          )}
+                    <UploadIcon className="mr-2 h-4 w-4" />
+                    Upload Sekarang
+                  </Button>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {filteredDocuments.map((doc) => {
+                  const statusConfig = getStatusConfig(doc.status);
+                  const StatusIcon = statusConfig.icon;
+                  const FileIcon = getFileIcon();
+
+                  return (
+                    <GlassCard key={doc.id} className="transition-all hover:shadow-md">
+                      <div className="flex items-center justify-between p-4">
+                        <div className="flex items-center gap-4">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-600 dark:bg-blue-600">
+                            <FileIcon className="h-6 w-6 text-white" />
+                          </div>
+                          <div>
+                            <h4 className="font-medium text-slate-900 dark:text-white">{doc.file_name}</h4>
+                            <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
+                              <span>{formatDate(doc.uploaded_at)}</span>
+                              {doc.chunksCount !== undefined && (
+                                <span>• {doc.chunksCount} chunks</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <Badge className={statusConfig.color}>
+                            <StatusIcon
+                              className={`mr-1 h-3 w-3 ${
+                                doc.status === "processing" ? "animate-spin" : ""
+                              }`}
+                            />
+                            {statusConfig.label}
+                          </Badge>
+
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDownload(doc)}
+                              disabled={doc.status === "processing" || downloadingId === doc.id}
+                            >
+                              {downloadingId === doc.id ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Download className="h-4 w-4" />
+                              )}
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setDeleteId(doc.id)}
+                              className="text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950"
+                              disabled={downloadingId === doc.id || deleting}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <Badge className={statusConfig.color}>
-                        <StatusIcon
-                          className={`mr-1 h-3 w-3 ${
-                            doc.status === "processing" ? "animate-spin" : ""
-                          }`}
-                        />
-                        {statusConfig.label}
-                      </Badge>
-
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDownload(doc)}
-                          disabled={doc.status === "processing" || downloadingId === doc.id}
-                        >
-                          {downloadingId === doc.id ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Download className="h-4 w-4" />
-                          )}
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setDeleteId(doc.id)}
-                          className="text-red-600 hover:bg-red-50 hover:text-red-700"
-                          disabled={downloadingId === doc.id || deleting}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                    </GlassCard>
+                  );
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </GlassCard>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>

@@ -12,6 +12,7 @@ import {
   User,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { GlassCard } from "@/components/ui/glass-card";
 
 interface DocumentStats {
   total: number;
@@ -102,10 +103,10 @@ export default function DashboardPage() {
     <div className="space-y-6">
       {/* Welcome Section */}
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">
+        <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
           Welcome back, {(userData?.name as string) || "User"}! 👋
         </h2>
-        <p className="text-slate-600 dark:text-slate-400">
+        <p className="text-slate-600 dark:text-slate-400 mt-2">
           Here&apos;s what&apos;s happening with your documents today.
         </p>
       </div>
@@ -115,144 +116,170 @@ export default function DashboardPage() {
         {statCards.map((stat) => {
           const Icon = stat.icon;
           return (
-            <Card key={stat.title}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  {stat.title}
-                </CardTitle>
-                <div className={`rounded-full p-2 ${stat.bgColor}`}>
-                  <Icon className={`h-4 w-4 ${stat.color}`} />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-                <p className="text-xs text-slate-600 dark:text-slate-400">
-                  {stat.description}
-                </p>
-              </CardContent>
-            </Card>
+            <GlassCard key={stat.title} className="h-full transition-shadow hover:shadow-md">
+              <Card className="border-0 bg-transparent shadow-none">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    {stat.title}
+                  </CardTitle>
+                  <div className={`rounded-full p-2 ${stat.bgColor}`}>
+                    <Icon className={`h-4 w-4 ${stat.color}`} />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                    {stat.value}
+                  </div>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                    {stat.description}
+                  </p>
+                </CardContent>
+              </Card>
+            </GlassCard>
           );
         })}
       </div>
 
       {/* Quick Actions */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card 
-          className="cursor-pointer transition-all hover:shadow-lg"
+        <GlassCard 
+          className="cursor-pointer h-full transition-all hover:shadow-md"
           onClick={() => router.push("/dashboard/upload")}
         >
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="rounded-full bg-blue-100 p-3 dark:bg-blue-950">
-                <Upload className="h-6 w-6 text-blue-600" />
+          <Card className="border-0 bg-transparent shadow-none h-full">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="rounded-full bg-blue-600 p-3">
+                  <Upload className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg text-blue-600 dark:text-blue-400">
+                    Upload Document
+                  </CardTitle>
+                  <CardDescription>
+                    Tambah file baru
+                  </CardDescription>
+                </div>
               </div>
-              <div>
-                <CardTitle className="text-lg">Upload Document</CardTitle>
-                <CardDescription>
-                  Tambah file baru
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              Upload PDF, DOCX, atau gambar ke knowledge base kamu
-            </p>
-          </CardContent>
-        </Card>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                Upload PDF, DOCX, atau gambar ke knowledge base kamu
+              </p>
+            </CardContent>
+          </Card>
+        </GlassCard>
 
-        <Card 
-          className="cursor-pointer transition-all hover:shadow-lg"
+        <GlassCard 
+          className="cursor-pointer h-full transition-all hover:shadow-md"
           onClick={() => router.push("/dashboard/documents")}
         >
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="rounded-full bg-green-100 p-3 dark:bg-green-950">
-                <FileText className="h-6 w-6 text-green-600" />
+          <Card className="border-0 bg-transparent shadow-none h-full">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="rounded-full bg-green-600 p-3">
+                  <FileText className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg text-green-600 dark:text-green-400">
+                    View Documents
+                  </CardTitle>
+                  <CardDescription>
+                    Lihat semua file
+                  </CardDescription>
+                </div>
               </div>
-              <div>
-                <CardTitle className="text-lg">View Documents</CardTitle>
-                <CardDescription>
-                  Lihat semua file
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              Kelola dan download dokumen yang sudah diupload
-            </p>
-          </CardContent>
-        </Card>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                Kelola dan download dokumen yang sudah diupload
+              </p>
+            </CardContent>
+          </Card>
+        </GlassCard>
 
-        <Card 
-          className="cursor-pointer transition-all hover:shadow-lg"
+        <GlassCard 
+          className="cursor-pointer h-full transition-all hover:shadow-md"
           onClick={() => router.push("/dashboard/persona")}
         >
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="rounded-full bg-purple-100 p-3 dark:bg-purple-950">
-                <User className="h-6 w-6 text-purple-600" />
+          <Card className="border-0 bg-transparent shadow-none h-full">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="rounded-full bg-purple-600 p-3">
+                  <User className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg text-purple-600 dark:text-purple-400">
+                    AI Persona
+                  </CardTitle>
+                  <CardDescription>
+                    Atur persona AI
+                  </CardDescription>
+                </div>
               </div>
-              <div>
-                <CardTitle className="text-lg">AI Persona</CardTitle>
-                <CardDescription>
-                  Atur persona AI
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              Customize personality dan behavior AI assistant kamu
-            </p>
-          </CardContent>
-        </Card>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                Customize personality dan behavior AI assistant kamu
+              </p>
+            </CardContent>
+          </Card>
+        </GlassCard>
       </div>
 
       {/* Getting Started Guide */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Getting Started with Mindsync</CardTitle>
-          <CardDescription>
-            Follow these steps to make the most of your second brain
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-6 md:grid-cols-3">
-            <div className="space-y-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-lg font-bold text-blue-600 dark:bg-blue-950">
-                1
+      <GlassCard>
+        <Card className="border-0 bg-transparent shadow-none">
+          <CardHeader>
+            <CardTitle className="text-2xl text-slate-900 dark:text-white">
+              Getting Started with Mindsync
+            </CardTitle>
+            <CardDescription>
+              Follow these steps to make the most of your second brain
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-6 md:grid-cols-3">
+              <div className="space-y-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-lg font-bold text-white">
+                  1
+                </div>
+                <h3 className="text-lg font-semibold text-blue-600 dark:text-blue-400">
+                  Upload Documents
+                </h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Start by uploading your documents, PDFs, images, or text files to build
+                  your knowledge base. Mendukung OCR untuk gambar!
+                </p>
               </div>
-              <h3 className="text-lg font-semibold">Upload Documents</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                Start by uploading your documents, PDFs, images, or text files to build
-                your knowledge base. Mendukung OCR untuk gambar!
-              </p>
-            </div>
-            <div className="space-y-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-100 text-lg font-bold text-purple-600 dark:bg-purple-950">
-                2
+              <div className="space-y-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-600 text-lg font-bold text-white">
+                  2
+                </div>
+                <h3 className="text-lg font-semibold text-purple-600 dark:text-purple-400">
+                  Configure AI Persona
+                </h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Customize your AI assistant&apos;s personality and behavior to match your
+                  needs. Buat AI kamu punya karakter unik!
+                </p>
               </div>
-              <h3 className="text-lg font-semibold">Configure AI Persona</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                Customize your AI assistant&apos;s personality and behavior to match your
-                needs. Buat AI kamu punya karakter unik!
-              </p>
-            </div>
-            <div className="space-y-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-lg font-bold text-green-600 dark:bg-green-950">
-                3
+              <div className="space-y-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-lg font-bold text-white">
+                  3
+                </div>
+                <h3 className="text-lg font-semibold text-green-600 dark:text-green-400">
+                  Start Chatting
+                </h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Use WhatsApp to chat with your AI assistant and access your
+                  documents anytime, anywhere. Chat sepuasnya!
+                </p>
               </div>
-              <h3 className="text-lg font-semibold">Start Chatting</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                Use WhatsApp to chat with your AI assistant and access your
-                documents anytime, anywhere. Chat sepuasnya!
-              </p>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </GlassCard>
     </div>
   );
 }
