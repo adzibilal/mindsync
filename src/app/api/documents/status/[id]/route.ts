@@ -35,9 +35,9 @@ export async function GET(
       );
     }
 
-    // Get chunks count if processed
+    // Get chunks count if completed
     let chunksCount = 0;
-    if (document.status === "processed") {
+    if (document.status === "completed") {
       const { count } = await supabase
         .from("knowledge_base_chunks")
         .select("*", { count: "exact", head: true })
@@ -72,9 +72,9 @@ function getStatusMessage(status: string): string {
       return "Dokumen berhasil diupload, menunggu diproses...";
     case "processing":
       return "Lagi diproses nih, tunggu sebentar ya! 🔄";
-    case "processed":
+    case "completed":
       return "Dokumen sudah siap! Bisa ditanya lewat WhatsApp 🎉";
-    case "failed":
+    case "error":
       return "Oops! Ada yang error. Coba upload lagi ya 😢";
     default:
       return "Status tidak diketahui";

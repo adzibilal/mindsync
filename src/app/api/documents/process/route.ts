@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
       console.error("Download error:", downloadError);
       await supabase
         .from("documents_details")
-        .update({ status: "failed" })
+        .update({ status: "error" })
         .eq("id", documentId);
 
       return NextResponse.json(
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
       console.error("Text extraction error:", extractError);
       await supabase
         .from("documents_details")
-        .update({ status: "failed" })
+        .update({ status: "error" })
         .eq("id", documentId);
 
       return NextResponse.json(
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
     if (!processed.text || processed.text.trim().length === 0) {
       await supabase
         .from("documents_details")
-        .update({ status: "failed" })
+        .update({ status: "error" })
         .eq("id", documentId);
 
       return NextResponse.json(
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
     if (chunks.length === 0) {
       await supabase
         .from("documents_details")
-        .update({ status: "failed" })
+        .update({ status: "error" })
         .eq("id", documentId);
 
       return NextResponse.json(
@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
       console.error("Embedding generation error:", embeddingError);
       await supabase
         .from("documents_details")
-        .update({ status: "failed" })
+        .update({ status: "error" })
         .eq("id", documentId);
 
       return NextResponse.json(
@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
       console.error("Error details:", JSON.stringify(insertError, null, 2));
       await supabase
         .from("documents_details")
-        .update({ status: "failed" })
+        .update({ status: "error" })
         .eq("id", documentId);
 
       return NextResponse.json(
@@ -179,12 +179,20 @@ export async function POST(request: NextRequest) {
     }
     console.log("Documents inserted successfully!");
 
-    // Update status jadi processed
-    console.log("Updating document status to processed...");
-    await supabase
+    // Update status jadi completed
+    console.log("Updating document status to completed...");
+    const { data: updateData, error: updateError } = await supabase
       .from("documents_details")
-      .update({ status: "processed" })
-      .eq("id", documentId);
+      .update({ status: "completed" })
+      .eq("id", documentId)
+      .select();
+
+    if (updateError) {
+      console.error("Error updating status to completed:", updateError);
+      console.error("Update error details:", JSON.stringify(updateError, null, 2));
+    } else {
+      console.log("Status updated successfully to completed!", updateData);
+    }
 
     console.log("=== PROCESSING COMPLETED SUCCESSFULLY ===");
     return NextResponse.json({
@@ -202,17 +210,17 @@ export async function POST(request: NextRequest) {
     console.error("=== PROCESSING FAILED ===");
     console.error("Processing error:", error);
 
-    // Update status jadi failed jika ada document ID
+    // Update status jadi error jika ada document ID
     if (documentId) {
       try {
-        console.log("Updating document status to failed...");
+        console.log("Updating document status to error...");
         await supabase
           .from("documents_details")
-          .update({ status: "failed" })
+          .update({ status: "error" })
           .eq("id", documentId);
-        console.log("Status updated to failed successfully");
+        console.log("Status updated to error successfully");
       } catch (updateError) {
-        console.error("Error updating status to failed:", updateError);
+        console.error("Error updating status to error:", updateError);
       }
     } else {
       console.error("No documentId available to update status");

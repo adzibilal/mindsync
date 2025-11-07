@@ -39,12 +39,12 @@ interface Document {
   id: string;
   user_whatsapp_number: string;
   file_name: string;
-  status: "uploaded" | "processing" | "processed" | "failed";
+  status: "uploaded" | "processing" | "completed" | "error";
   uploaded_at: string;
   chunksCount?: number;
 }
 
-type StatusFilter = "all" | "uploaded" | "processing" | "processed" | "failed";
+type StatusFilter = "all" | "uploaded" | "processing" | "completed" | "error";
 
 export default function DocumentsPage() {
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -189,9 +189,9 @@ export default function DocumentsPage() {
 
   const getStatusConfig = (status: string) => {
     switch (status) {
-      case "processed":
+      case "completed":
         return {
-          label: "Processed",
+          label: "Completed",
           color: "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400",
           icon: CheckCircle2,
         };
@@ -207,9 +207,9 @@ export default function DocumentsPage() {
           color: "bg-yellow-100 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-400",
           icon: Clock,
         };
-      case "failed":
+      case "error":
         return {
-          label: "Failed",
+          label: "Error",
           color: "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400",
           icon: AlertCircle,
         };
@@ -246,8 +246,8 @@ export default function DocumentsPage() {
       bgColor: "bg-blue-100 dark:bg-blue-950",
     },
     {
-      label: "Processed",
-      value: documents.filter((d) => d.status === "processed").length,
+      label: "Completed",
+      value: documents.filter((d) => d.status === "completed").length,
       color: "text-green-600",
       bgColor: "bg-green-100 dark:bg-green-950",
     },
@@ -258,8 +258,8 @@ export default function DocumentsPage() {
       bgColor: "bg-yellow-100 dark:bg-yellow-950",
     },
     {
-      label: "Failed",
-      value: documents.filter((d) => d.status === "failed").length,
+      label: "Error",
+      value: documents.filter((d) => d.status === "error").length,
       color: "text-red-600",
       bgColor: "bg-red-100 dark:bg-red-950",
     },
@@ -342,11 +342,11 @@ export default function DocumentsPage() {
                   Semua
                 </Button>
                 <Button
-                  variant={statusFilter === "processed" ? "default" : "outline"}
+                  variant={statusFilter === "completed" ? "default" : "outline"}
                   size="sm"
-                  onClick={() => setStatusFilter("processed")}
+                  onClick={() => setStatusFilter("completed")}
                 >
-                  Processed
+                  Completed
                 </Button>
                 <Button
                   variant={statusFilter === "processing" ? "default" : "outline"}
@@ -356,11 +356,11 @@ export default function DocumentsPage() {
                   Processing
                 </Button>
                 <Button
-                  variant={statusFilter === "failed" ? "default" : "outline"}
+                  variant={statusFilter === "error" ? "default" : "outline"}
                   size="sm"
-                  onClick={() => setStatusFilter("failed")}
+                  onClick={() => setStatusFilter("error")}
                 >
-                  Failed
+                  Error
                 </Button>
               </div>
             </div>

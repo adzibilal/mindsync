@@ -79,7 +79,7 @@ export interface Document {
   id: string;
   user_whatsapp_number: string;
   file_name: string;
-  status: 'uploaded' | 'processing' | 'processed' | 'failed';
+  status: 'uploaded' | 'processing' | 'completed' | 'error';
   uploaded_at: string;
 }
 
