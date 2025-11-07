@@ -11,11 +11,8 @@ import {
   LayoutDashboard,
   FileText,
   Upload,
-  MessageSquare,
-  Settings,
   LogOut,
   Bot,
-  Users,
 } from "lucide-react";
 import { getUserData, clearAuth } from "@/utils/cookies";
 import { toast } from "sonner";

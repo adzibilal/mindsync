@@ -166,19 +166,6 @@ export default function UploadPage() {
     return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
   };
 
-  // Get status color
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "success":
-        return "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/30";
-      case "error":
-        return "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/30";
-      case "uploading":
-        return "border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/30";
-      default:
-        return "border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/30";
-    }
-  };
 
   const pendingCount = files.filter((f) => f.status === "pending").length;
   const uploadingCount = files.filter((f) => f.status === "uploading").length;

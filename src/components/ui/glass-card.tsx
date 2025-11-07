@@ -8,6 +8,7 @@ interface GlassCardProps {
   className?: string;
   blur?: "sm" | "md" | "lg" | "xl";
   hover?: boolean;
+  onClick?: () => void;
 }
 
 export function GlassCard({
@@ -15,6 +16,7 @@ export function GlassCard({
   className,
   blur = "md",
   hover = true,
+  onClick,
 }: GlassCardProps) {
   const blurClasses = {
     sm: "backdrop-blur-sm",
@@ -25,11 +27,13 @@ export function GlassCard({
 
   return (
     <div
+      onClick={onClick}
       className={cn(
         "rounded-xl border border-slate-200/50 bg-white/80 shadow-sm",
         blurClasses[blur],
         hover && "transition-all duration-200 hover:shadow-md",
         "dark:border-slate-800/50 dark:bg-slate-900/80",
+        onClick && "cursor-pointer",
         className
       )}
     >
