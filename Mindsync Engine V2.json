@@ -1,0 +1,1496 @@
+{
+  "name": "Mindsync Engine V2",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "@devlikeapro/n8n-nodes-waha.wahaTrigger",
+      "typeVersion": 202502,
+      "position": [
+        -1040,
+        -336
+      ],
+      "id": "0a4b4415-e5b4-43e5-ba3c-30f29ac7c7f0",
+      "name": "WAHA Trigger",
+      "webhookId": "e80b56e6-b88f-4414-9b4e-8bf9e4628ac0"
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Text",
+        "session": "={{ $('WAHA Trigger').item.json.session }}",
+        "chatId": "={{ $('WAHA Trigger').item.json.payload.from }}",
+        "text": "={{ $('AI Agent').item.json.output }}",
+        "requestOptions": {}
+      },
+      "type": "@devlikeapro/n8n-nodes-waha.WAHA",
+      "typeVersion": 202502,
+      "position": [
+        1776,
+        320
+      ],
+      "id": "3a638a26-fcdb-4edc-8a5d-d89e9b290875",
+      "name": "Send a text message",
+      "credentials": {
+        "wahaApi": {
+          "id": "hKM3zBYCRiTnLHzX",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Seen",
+        "requestOptions": {}
+      },
+      "type": "@devlikeapro/n8n-nodes-waha.WAHA",
+      "typeVersion": 202502,
+      "position": [
+        -416,
+        216
+      ],
+      "id": "a2c99a54-e60b-47fd-9862-31eedf4a575e",
+      "name": "Send Seen",
+      "credentials": {
+        "wahaApi": {
+          "id": "hKM3zBYCRiTnLHzX",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Start Typing",
+        "session": "={{ $('WAHA Trigger').item.json.session }}",
+        "chatId": "={{ $('WAHA Trigger').item.json.payload.from }}",
+        "requestOptions": {}
+      },
+      "type": "@devlikeapro/n8n-nodes-waha.WAHA",
+      "typeVersion": 202502,
+      "position": [
+        -192,
+        216
+      ],
+      "id": "93d9dbd2-69db-4eea-8d7b-cf826d2f48d1",
+      "name": "Start Typing",
+      "credentials": {
+        "wahaApi": {
+          "id": "hKM3zBYCRiTnLHzX",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Stop Typing",
+        "session": "={{ $('WAHA Trigger').item.json.session }}",
+        "chatId": "={{ $('WAHA Trigger').item.json.payload.from }}",
+        "requestOptions": {}
+      },
+      "type": "@devlikeapro/n8n-nodes-waha.WAHA",
+      "typeVersion": 202502,
+      "position": [
+        1552,
+        320
+      ],
+      "id": "b98854fb-40ea-4c3f-bb2c-79f0ca7c7b05",
+      "name": "Stop Typing",
+      "credentials": {
+        "wahaApi": {
+          "id": "hKM3zBYCRiTnLHzX",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0b4457de-35a9-436d-9c24-8d10c5c79d73",
+                    "leftValue": "={{ $json.payload.hasMedia }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "isDocuments"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.payload.id }}",
+                    "rightValue": "@c\\.us",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    },
+                    "id": "4568638f-9df2-42c5-a0b6-2eebc2d7cc1e"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "isPersonal"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "a4567c13-f3e2-431c-877f-57ab433b66b3",
+                    "leftValue": "={{ $json.payload.id }}",
+                    "rightValue": "@g\\.us",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "isGroup"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -640,
+        32
+      ],
+      "id": "ad11aaa7-3a46-4605-af9f-cea0f9b7511c",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('WAHA Trigger').item.json.payload.body }}",
+        "options": {
+          "systemMessage": "=# 🧠 Mindsync AI Agent — Enhanced System Prompt (v2)\n\n## 🎯 Tujuan Utama & Peran\nKamu adalah **Mindsync**, sebuah AI Agent cerdas yang bertindak sebagai asisten pribadi untuk dokumen.  \nTugas utamamu adalah mengubah interaksi pengguna dengan dokumen (PDF, DOCX, TXT, dsb.) menjadi pengalaman percakapan yang **alami, efisien, dan produktif** — terutama melalui WhatsApp.\n\nKamu bukan sekadar mesin penjawab, tapi **rekan kerja virtual yang proaktif dan kontekstual**.\n\n---\n\n## 💬 Identitas & Persona\n- **Nama:** `{{ $json.cameo_name || \"Mindsync\" }}`\n- **Karakteristik:** `{{ $json.system_prompt || \"ramah, informatif, dan siap membantu pengguna baru\" }}`\n\n---\n\n## ⚙️ Alur Kerja Inti & Prioritas (WAJIB DIIKUTI)\n\nSetiap kali kamu menerima pesan dari pengguna, ikuti **urutan prioritas di bawah ini** untuk menentukan sumber jawaban dan gaya respons yang tepat.\n\n---\n\n### **1️⃣ Analisis Intent Pengguna**\n- Tentukan apakah pesan pengguna adalah:\n  - **(A)** Pertanyaan terkait **konten dokumen** (contoh: “apa isi pasal 3?”, “ringkas dokumen ini”)\n  - **(B)** **Percakapan umum** (contoh: “hai”, “terima kasih”, “lagi ngapain?”)\n\n➡️ Jika hanya percakapan biasa, balas secara natural dan ringan — **tanpa pencarian ke database atau memory agent.**\n\n---\n\n### **2️⃣ Prioritas #1: Vector Database (Sumber Kebenaran Utama)**\nJika pesan terkait konten dokumen:\n\n1. **Lakukan pencarian ke Vector Database** pengguna.  \n   Ini adalah **sumber kebenaran utama** untuk semua jawaban terkait isi dokumen.\n\n2. Jika hasil pencarian **relevan ditemukan:**\n   - Gunakan data dari dokumen tersebut **sebagai satu-satunya sumber jawaban.**\n   - Jangan campur dengan pengetahuan umum.\n   - Selalu beri konteks asalnya:\n     > “Dari dokumen yang kamu unggah, saya temukan bahwa…”  \n     > “Di dalam kontrak tersebut disebutkan bahwa…”\n\n3. Jika **tidak ditemukan konteks relevan**, lanjut ke **Prioritas #2 (Memory Agent).**\n\n---\n\n### **3️⃣ Prioritas #2: Memory Agent Node (Konteks Percakapan & Riwayat Pengguna)**\nJika Vector Database tidak memberikan hasil yang relevan:\n\n1. Cek **Memory Agent Node** (misalnya dari memory store / database internal).  \n   Gunakan ini untuk mencari **informasi kontekstual yang pernah disimpan**, seperti:\n   - Riwayat percakapan sebelumnya.\n   - Data profil atau preferensi pengguna.\n   - Informasi yang pernah dikonfirmasi sebelumnya (misal: “project terakhir”, “nama dokumen”, “topik terakhir”).\n\n2. Jika Memory Agent memberikan hasil relevan:\n   - Gunakan informasi tersebut untuk menjawab dengan konteks personal.\n   - Awali dengan nada yang menunjukkan kontinuitas percakapan, contoh:\n     > “Kalau dari percakapan kita sebelumnya, kamu sempat bahas tentang dokumen proyek ya…”  \n     > “Saya ingat kamu pernah upload file proposal, dan dari situ saya temukan bahwa…”\n\n3. Jika Memory Agent juga **tidak memiliki data relevan**, lanjut ke **Prioritas #3 (Pengetahuan Umum).**\n\n---\n\n### **4️⃣ Prioritas #3: Pengetahuan Umum (Fallback)**\nJika Vector Database dan Memory Agent tidak punya informasi relevan:\n\n1. Gunakan **pengetahuan umummu (LLM)** untuk memberi jawaban terbaik yang bisa kamu berikan.\n2. Selalu tambahkan kalimat ajakan sopan untuk unggah dokumen agar hasil lebih akurat:\n   > “Oh ya, informasi ini sifatnya masih umum ya. Kalau kamu unggah dokumen terkait, saya bisa kasih jawaban yang lebih spesifik sesuai konteksmu. 📄”\n\n---\n\n## 🧩 Kemampuan Utama\n- **Pemahaman Dokumen:** Menemukan, menjelaskan, dan mengutip isi dari dokumen pengguna.\n- **Ringkasan Cerdas:** Membuat ringkasan dengan panjang dan detail yang disesuaikan.\n- **Pemanfaatan Memory Agent:** Mengingat konteks, preferensi, dan percakapan sebelumnya.\n- **Ekstraksi Informasi:** Mengambil elemen spesifik seperti nama pihak, tanggal, pasal, nilai nominal, dll.\n- **Percakapan Natural:** Menjaga gaya komunikasi santai dan alami seperti di WhatsApp.\n\n---\n\n## 🧠 Integrasi Teknis\n- **Vector Database:** Sumber kebenaran utama untuk konten dokumen.\n- **Memory Agent Node:** Penyimpan konteks jangka panjang (profil, riwayat, preferensi).\n- **Fallback LLM:** Digunakan hanya jika dua sumber utama di atas tidak memberikan hasil.\n- **Mode Komunikasi:** WhatsApp Chat (dengan konteks percakapan berkelanjutan).\n- **Format Jawaban:** Bahasa alami, tidak kaku, tetap profesional dan ramah.\n\n---\n\n## 📚 Contoh Respons Lengkap\n\n**✅ Kasus 1 — Konteks Ditemukan di Vector DB**\n> **User:** “Apa isi pasal 4 di kontrak ini?”  \n> **Mindsync:** “Berdasarkan dokumen kontraknya, di *Pasal 4: Ketentuan Kerja Sama* dijelaskan bahwa kedua pihak wajib melaporkan progres setiap dua minggu sekali. Mau saya bantu ringkaskan bagian itu?”\n\n---\n\n**✅ Kasus 2 — Tidak Ada di Vector DB, Tapi Ada di Memory Agent**\n> **User:** “Tolong ringkas dokumen proyek yang kemarin.”  \n> **Mindsync:** “Dari catatan saya, kamu terakhir upload dokumen ‘Proposal Proyek Smart Energy’.  \n> Ringkasannya begini 👇  \n> - Tujuan: Pengembangan sistem monitoring energi pintar.  \n> - Durasi: 6 bulan.  \n> - Pembayaran: Per milestone.  \n> Mau saya buatin versi lebih detail per bagian?”\n\n---\n\n**✅ Kasus 3 — Tidak Ada di Vector DB & Memory Agent (Fallback Umum)**\n> **User:** “Apa itu MOU?”  \n> **Mindsync:** “MOU (Memorandum of Understanding) adalah dokumen kesepahaman antara dua pihak sebelum membuat perjanjian resmi.  \n> Oh ya, informasi ini masih bersifat umum ya. Kalau kamu unggah contoh dokumennya, saya bisa bantu analisis lebih detail. 📄”\n\n---\n\n## 🧩 Kondisi Default (Jika Tidak Ada Cameo)\nJika `cameo_name` atau `system_prompt` kosong:\n- **Nama:** Mindsync  \n- **Karakteristik:** Ramah, informatif, dan siap membantu pengguna baru.\n\n---\n\n## ✅ Ringkasan Hierarki Prioritas\n1️⃣ Vector Database →  \n2️⃣ Memory Agent Node →  \n3️⃣ Pengetahuan Umum (LLM Fallback)\n\n**Selalu gunakan sumber paling relevan dan beri konteks asal informasi.**\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        976,
+        320
+      ],
+      "id": "0abaeddb-b3a0-40a3-9c3b-0d08d2c76855",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        928,
+        544
+      ],
+      "id": "57eebc54-5e1f-4c32-be32-5e3745e06f18",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "YTKWGVU82WormHBY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Use this for base knowladge",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "whatsapp_number",
+                "value": "={{ $('WAHA Trigger').item.json.payload.from.match(/\\d+(?=@)/)[0] }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        1184,
+        544
+      ],
+      "id": "787a0800-a32f-41b3-aaba-b0e32b5518e7",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "oWkSwiwR2iyH9S5N",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "users",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "whatsapp_number",
+              "keyValue": "={{ $('WAHA Trigger').item.json.payload.from.match(/\\d+(?=@)/)[0] }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        32,
+        216
+      ],
+      "id": "11264082-c066-4461-ade5-5db25349b1e0",
+      "name": "Get a row",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "oWkSwiwR2iyH9S5N",
+          "name": "Supabase account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b4d4a1b1-61d0-405a-a700-809fdc88f661",
+              "leftValue": "={{ $json.whatsapp_number }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        256,
+        216
+      ],
+      "id": "ce05997e-ff6c-4083-aa7b-a578c13bfcec",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Stop Typing",
+        "session": "={{ $('WAHA Trigger').item.json.session }}",
+        "chatId": "={{ $('WAHA Trigger').item.json.payload.from }}",
+        "requestOptions": {}
+      },
+      "type": "@devlikeapro/n8n-nodes-waha.WAHA",
+      "typeVersion": 202502,
+      "position": [
+        656,
+        1040
+      ],
+      "id": "3180e86a-56ff-41ba-a009-ce03d25f3ddb",
+      "name": "Stop Typing1",
+      "credentials": {
+        "wahaApi": {
+          "id": "hKM3zBYCRiTnLHzX",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Text",
+        "session": "={{ $('WAHA Trigger').item.json.session }}",
+        "chatId": "={{ $('WAHA Trigger').item.json.payload.from }}",
+        "text": "Halo! Nomor kamu belum terdaftar di sistem Mindsync, nih.\n\nSilakan daftar dulu ya di link ini:\nhttps://mindsync.magang.pro\n\nGampang kok, tinggal ikutin aja langkah-langkahnya. Makasih!",
+        "requestOptions": {}
+      },
+      "type": "@devlikeapro/n8n-nodes-waha.WAHA",
+      "typeVersion": 202502,
+      "position": [
+        880,
+        1040
+      ],
+      "id": "97397bec-cdbe-44a1-96d6-8a7585c45e21",
+      "name": "Send a text message1",
+      "credentials": {
+        "wahaApi": {
+          "id": "hKM3zBYCRiTnLHzX",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('WAHA Trigger').item.json.payload.body }}",
+                    "rightValue": "SEND OTP",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "bf350c64-3202-4873-aab7-fa1caede6a14"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "isSendOTP"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "50ef0872-4d4d-4d76-80d9-d85b5e74391b",
+                    "leftValue": "={{ $('WAHA Trigger').item.json.payload._data.body }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "isRegularChat"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        480,
+        120
+      ],
+      "id": "2fab2413-ff0a-4266-a79e-b15388e0f5e2",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Text",
+        "session": "={{ $('WAHA Trigger').item.json.session }}",
+        "chatId": "={{ $('WAHA Trigger').item.json.payload.from }}",
+        "text": "=Psstt... ini kode rahasia buat kamu masuk ke Mindsync: 🤫\n\n{{ $json.code }}\n\nJaga baik-baik ya, jangan sampai bocor ke orang lain! Kodenya aktif buat 1 Jam ke depan.\n\nKalau kamu nggak ngerasa minta kode ini, cuekin aja ya pesannya.",
+        "requestOptions": {}
+      },
+      "type": "@devlikeapro/n8n-nodes-waha.WAHA",
+      "typeVersion": 202502,
+      "position": [
+        1128,
+        -176
+      ],
+      "id": "bc8fb854-5867-474c-b499-9e8df8cb6da2",
+      "name": "Send a text message2",
+      "credentials": {
+        "wahaApi": {
+          "id": "hKM3zBYCRiTnLHzX",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "otp_codes",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "user_whatsapp_number",
+              "fieldValue": "={{ $('Get a row').item.json.whatsapp_number }}"
+            },
+            {
+              "fieldId": "code",
+              "fieldValue": "={{ Math.floor(100000 + Math.random() * 900000) }}"
+            },
+            {
+              "fieldId": "expires_at",
+              "fieldValue": "={{ new Date(Date.now() + 1 * 60 * 60 * 1000).toISOString() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        704,
+        -80
+      ],
+      "id": "aba29f40-dc21-4793-807d-2d4f905e9186",
+      "name": "Create a row1",
+      "alwaysOutputData": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "oWkSwiwR2iyH9S5N",
+          "name": "Supabase account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Text",
+        "session": "={{ $('WAHA Trigger').item.json.session }}",
+        "chatId": "={{ $('WAHA Trigger').item.json.payload.from }}",
+        "reply_to": "=",
+        "text": "=Oops! 🛠️ Sepertinya lagi ada kendala teknis di sistem kami. Tim kami sudah dapat notifikasinya dan lagi dicek kok.\n\nMohon coba lagi dalam beberapa menit ya. Maaf banget jadi nggak nyaman. 🙏",
+        "requestOptions": {}
+      },
+      "type": "@devlikeapro/n8n-nodes-waha.WAHA",
+      "typeVersion": 202502,
+      "position": [
+        1128,
+        16
+      ],
+      "id": "ad3c0596-2a60-4fc8-b7a6-9780b7a6ffe6",
+      "name": "Send a text message3",
+      "credentials": {
+        "wahaApi": {
+          "id": "hKM3zBYCRiTnLHzX",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "cameo_personas",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "user_whatsapp_number",
+              "keyValue": "={{ $('Get a row').item.json.whatsapp_number }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        704,
+        320
+      ],
+      "id": "f3c2eee6-2fbd-4d06-8edb-3b63ca2f6576",
+      "name": "Get a row1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "oWkSwiwR2iyH9S5N",
+          "name": "Supabase account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        1712,
+        -1024
+      ],
+      "id": "f6238829-8629-4cd6-ae6d-d091e11c9235",
+      "name": "Supabase Vector Store1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "oWkSwiwR2iyH9S5N",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1680,
+        -800
+      ],
+      "id": "cb995530-930f-4ae4-98ad-66fa7afe4bb3",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "YTKWGVU82WormHBY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "file_name",
+                "value": "={{ $json.file_name }}"
+              },
+              {
+                "name": "whatsapp_number",
+                "value": "={{ $json.user_whatsapp_number }}"
+              },
+              {
+                "name": "document_id",
+                "value": "={{ $json.id }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        1808,
+        -800
+      ],
+      "id": "80b0e68e-8f7e-4367-8753-347e844aac1b",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Seen",
+        "requestOptions": {}
+      },
+      "type": "@devlikeapro/n8n-nodes-waha.WAHA",
+      "typeVersion": 202502,
+      "position": [
+        -416,
+        -416
+      ],
+      "id": "8c7e015e-42b7-4e0f-a194-5b17031e35dd",
+      "name": "Send Seen1",
+      "credentials": {
+        "wahaApi": {
+          "id": "hKM3zBYCRiTnLHzX",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Set Reaction",
+        "session": "={{ $('WAHA Trigger').item.json.session }}",
+        "messageId": "={{ $('WAHA Trigger').item.json.payload.id }}",
+        "reaction": "🔃",
+        "requestOptions": {}
+      },
+      "type": "@devlikeapro/n8n-nodes-waha.WAHA",
+      "typeVersion": 202502,
+      "position": [
+        -192,
+        -416
+      ],
+      "id": "fbdf5947-6768-47f5-91a5-4e3a7847c2c0",
+      "name": "React to a message with an emoji",
+      "credentials": {
+        "wahaApi": {
+          "id": "hKM3zBYCRiTnLHzX",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Set Reaction",
+        "session": "={{ $('WAHA Trigger').item.json.session }}",
+        "messageId": "={{ $('WAHA Trigger').item.json.payload.id }}",
+        "reaction": "✅",
+        "requestOptions": {}
+      },
+      "type": "@devlikeapro/n8n-nodes-waha.WAHA",
+      "typeVersion": 202502,
+      "position": [
+        2176,
+        -1024
+      ],
+      "id": "43239170-fff3-4ac6-9cb1-5808e78581ee",
+      "name": "React to a message with an emoji1",
+      "credentials": {
+        "wahaApi": {
+          "id": "hKM3zBYCRiTnLHzX",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Start Typing",
+        "session": "={{ $('WAHA Trigger').item.json.session }}",
+        "chatId": "={{ $('WAHA Trigger').item.json.payload.from }}",
+        "requestOptions": {}
+      },
+      "type": "@devlikeapro/n8n-nodes-waha.WAHA",
+      "typeVersion": 202502,
+      "position": [
+        2400,
+        -1024
+      ],
+      "id": "c470f819-d55e-42b0-8dd2-6d600d0f02b0",
+      "name": "Start Typing1",
+      "credentials": {
+        "wahaApi": {
+          "id": "hKM3zBYCRiTnLHzX",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Text",
+        "session": "={{ $('WAHA Trigger').item.json.session }}",
+        "chatId": "={{ $('WAHA Trigger').item.json.payload.from }}",
+        "text": "=Voila! Dokumen kamu sudah mendarat dengan selamat di Mindsync: 📄✨\n\n\"{{ $('IF: Is Image?').item.json.file_name }}\"\n\nSekarang giliran kamu buat nanya-nanya tentang isinya.\n\nMau minta ringkasan, cari poin penting, atau jelajahi idenya? Langsung aja ketik pertanyaanmu di bawah ya!",
+        "requestOptions": {}
+      },
+      "type": "@devlikeapro/n8n-nodes-waha.WAHA",
+      "typeVersion": 202502,
+      "position": [
+        2624,
+        -1024
+      ],
+      "id": "c0f6e353-20ad-4d28-abfd-5bc37eebb55e",
+      "name": "Send a text message4",
+      "credentials": {
+        "wahaApi": {
+          "id": "hKM3zBYCRiTnLHzX",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1264,
+        752
+      ],
+      "id": "1726ca6f-f0d1-4eb0-a923-14c30c950bae",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "YTKWGVU82WormHBY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        1888,
+        -592
+      ],
+      "id": "aa8b67c9-b557-43fa-a6a0-716fe34af386",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "content": "## Send OTP",
+        "height": 368,
+        "width": 720,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        604,
+        -192
+      ],
+      "typeVersion": 1,
+      "id": "2486e987-4bd7-4ee1-bf32-3e4c49946db1",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## USER NOT REGISTERED",
+        "height": 256,
+        "width": 448,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        592,
+        944
+      ],
+      "typeVersion": 1,
+      "id": "3d17007c-2004-4de9-bafd-5b4d48eb4dc1",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## RAG SECTION\n",
+        "height": 688,
+        "width": 1360,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        608,
+        208
+      ],
+      "typeVersion": 1,
+      "id": "9531568a-ddcb-4b9a-81e6-bd5ef5e8536f",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Get User Data",
+        "height": 224,
+        "width": 432,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -24,
+        152
+      ],
+      "typeVersion": 1,
+      "id": "6f6a8530-360a-4f30-b8e0-a3510e902daa",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Embeding File Section",
+        "height": 896,
+        "width": 2320,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        592,
+        -1184
+      ],
+      "typeVersion": 1,
+      "id": "12adfb45-793c-4f61-9079-dbfbd5c46f96",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.user_whatsapp_number }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1056,
+        544
+      ],
+      "id": "7576e74b-8866-4d8d-ab39-6613ba70f3ee",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('WAHA Trigger').item.json.payload.media.url }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "wahaApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        32,
+        -416
+      ],
+      "id": "2e02bf12-425c-40ca-b0b9-342d6228e57a",
+      "name": "GET MEDIA FROM WAHA",
+      "credentials": {
+        "wahaApi": {
+          "id": "hKM3zBYCRiTnLHzX",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "uploadFile",
+        "resource_type_file": "raw",
+        "additionalFieldsFile": {}
+      },
+      "type": "n8n-nodes-cloudinary.cloudinary",
+      "typeVersion": 1,
+      "position": [
+        256,
+        -416
+      ],
+      "id": "ed4c8ebd-400f-4125-8971-234bf9f9f0b8",
+      "name": "Upload an asset from file data1",
+      "credentials": {
+        "cloudinaryApi": {
+          "id": "JMaQ36gsee4sdKA8",
+          "name": "Cloudinary account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "documents_details",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "user_whatsapp_number",
+              "fieldValue": "={{ $('WAHA Trigger').item.json.payload.from.match(/\\d+(?=@)/)[0] }}"
+            },
+            {
+              "fieldId": "file_name",
+              "fieldValue": "={{ $json.url.split('/').pop() }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "uploaded"
+            },
+            {
+              "fieldId": "file_url",
+              "fieldValue": "={{ $json.url }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        480,
+        -416
+      ],
+      "id": "86672b75-7e59-4f75-9102-dbb0c5dad1b1",
+      "name": "Insert Data to Document Details",
+      "credentials": {
+        "supabaseApi": {
+          "id": "oWkSwiwR2iyH9S5N",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "2d1f8f3c-a9e1-4b6a-9f5b-b9c1d0f8a2b5",
+              "leftValue": "={{ $('WAHA Trigger').item.json.payload.media.mimetype }}",
+              "rightValue": "image/",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        640,
+        -432
+      ],
+      "id": "18be6ff6-90db-4033-a2a2-d2ef4d133f5f",
+      "name": "IF: Is Image?"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-tesseractjs.tesseractNode",
+      "typeVersion": 1,
+      "position": [
+        1008,
+        -1120
+      ],
+      "id": "5a134404-9e0e-4dc9-bb08-258e4163cf18",
+      "name": "Tesseract"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "text",
+        "options": {
+          "fileName": "={{ \"TEMPFILE\" + Math.floor(Date.now() / 1000) }}"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1232,
+        -1120
+      ],
+      "id": "e36c5305-4919-474c-8e28-4cd25ea3afec",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.file_url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        848,
+        -1120
+      ],
+      "id": "14b71381-222f-42af-9172-855a89c994bb",
+      "name": "GET DOCUMENT FROM CLOUDINARY"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('WAHA Trigger').item.json.payload.media.url }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "wahaApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1456,
+        -928
+      ],
+      "id": "0e4126b9-21a2-4d42-80d8-f8d970b6256b",
+      "name": "GET MEDIA FROM WAHA1",
+      "credentials": {
+        "wahaApi": {
+          "id": "hKM3zBYCRiTnLHzX",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "return items.map(item => {\n  const source = $items('IF: Is Image?')[0].json;\n\n  item.json = { ...item.json, ...source };\n  return item;\n});\n"
+      },
+      "id": "1fb8fc2e-b033-4ce5-b416-38dc32f6e861",
+      "name": "Add Metadata",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1456,
+        -1120
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WAHA Trigger": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Seen": {
+      "main": [
+        [
+          {
+            "node": "Start Typing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start Typing": {
+      "main": [
+        [
+          {
+            "node": "Get a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stop Typing": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Send Seen1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Seen",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Stop Typing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a row": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop Typing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stop Typing1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Create a row1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a row1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a row1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a row1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Seen1": {
+      "main": [
+        [
+          {
+            "node": "React to a message with an emoji",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "React to a message with an emoji": {
+      "main": [
+        [
+          {
+            "node": "GET MEDIA FROM WAHA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store1": {
+      "main": [
+        [
+          {
+            "node": "React to a message with an emoji1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "React to a message with an emoji1": {
+      "main": [
+        [
+          {
+            "node": "Start Typing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start Typing1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET MEDIA FROM WAHA": {
+      "main": [
+        [
+          {
+            "node": "Upload an asset from file data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload an asset from file data1": {
+      "main": [
+        [
+          {
+            "node": "Insert Data to Document Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Data to Document Details": {
+      "main": [
+        [
+          {
+            "node": "IF: Is Image?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF: Is Image?": {
+      "main": [
+        [
+          {
+            "node": "GET DOCUMENT FROM CLOUDINARY",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "GET MEDIA FROM WAHA1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tesseract": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Add Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET DOCUMENT FROM CLOUDINARY": {
+      "main": [
+        [
+          {
+            "node": "Tesseract",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET MEDIA FROM WAHA1": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Metadata": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "bdb2c29c-0c7f-4756-a332-a912cf7a4b79",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b4e1b16fff140c2123b1a0938fdfcbcc58b4a25a9b80c5e155e7c32965cd162a"
+  },
+  "id": "ERQCw1SSxuGHWz65",
+  "tags": []
+}

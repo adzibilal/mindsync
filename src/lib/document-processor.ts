@@ -1,17 +1,6 @@
 import mammoth from "mammoth";
 import * as XLSX from "xlsx";
-
-// pdf-parse type definition
-type PdfParseFunction = (buffer: Buffer) => Promise<{
-  text: string;
-  numpages: number;
-}>;
-
-// pdf-parse doesn't have proper ESM support, use require
-const getPdfParse = async (): Promise<PdfParseFunction> => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  return require("pdf-parse") as PdfParseFunction;
-};
+import { extractTextFromImage, isOCRSupportedImage } from "./ocr";
 
 export interface ProcessedDocument {
   text: string;
@@ -23,12 +12,13 @@ export interface ProcessedDocument {
 }
 
 /**
- * Extract text dari PDF file
+ * Extract text dari PDF file menggunakan pdf-parse-new
  */
 async function extractTextFromPDF(buffer: Buffer): Promise<ProcessedDocument> {
   try {
-    const pdf = await getPdfParse();
-    const data = await pdf(buffer);
+    // Use pdf-parse-new yang lebih kompatibel dengan Next.js
+    const pdfParse = (await import("pdf-parse-new")).default;
+    const data = await pdfParse(buffer);
     
     return {
       text: data.text,
@@ -113,7 +103,28 @@ async function extractTextFromPlainText(buffer: Buffer): Promise<ProcessedDocume
 }
 
 /**
+ * Extract text from image using OpenAI Vision API
+ */
+async function extractTextFromImageFile(buffer: Buffer): Promise<ProcessedDocument> {
+  try {
+    const result = await extractTextFromImage(buffer);
+    
+    return {
+      text: result.text,
+      metadata: {
+        wordCount: result.text.split(/\s+/).length,
+        charCount: result.text.length,
+      },
+    };
+  } catch (error) {
+    console.error("Error extracting text from image:", error);
+    throw new Error("Gagal extract text dari gambar");
+  }
+}
+
+/**
  * Main function untuk extract text dari berbagai format file
+ * Hybrid approach: OpenAI Vision untuk images, library spesifik untuk dokumen
  */
 export async function extractTextFromFile(
   buffer: Buffer,
@@ -121,6 +132,11 @@ export async function extractTextFromFile(
   fileName: string
 ): Promise<ProcessedDocument> {
   try {
+    // Images (PNG/JPG) - use OpenAI Vision API
+    if (isOCRSupportedImage(mimeType, fileName)) {
+      return await extractTextFromImageFile(buffer);
+    }
+    
     // PDF
     if (mimeType === "application/pdf") {
       return await extractTextFromPDF(buffer);
@@ -134,7 +150,7 @@ export async function extractTextFromFile(
       return await extractTextFromDOCX(buffer);
     }
     
-    // DOC (older format) - mammoth also supports this
+    // DOC (older format)
     if (mimeType === "application/msword" || fileName.endsWith(".doc")) {
       return await extractTextFromDOCX(buffer);
     }
@@ -255,4 +271,3 @@ export function splitTextIntoChunks(
   
   return chunks;
 }
-

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { uploadFileToCloudinary } from "@/lib/cloudinary";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -35,8 +36,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file type
+    // Validate file type - documents and images only (no videos)
     const allowedTypes = [
+      // Documents
       "application/pdf",
       "application/msword",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -45,30 +47,36 @@ export async function POST(request: NextRequest) {
       "text/csv",
       "application/vnd.ms-excel",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      // Images (for OCR)
+      "image/png",
+      "image/jpeg",
+      "image/jpg",
     ];
 
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: "Format file tidak didukung" },
+        { error: "Format file tidak didukung. Hanya dokumen (PDF, DOCX, TXT, CSV, XLSX) dan gambar (PNG, JPG) yang diperbolehkan." },
         { status: 400 }
       );
     }
 
-    // Upload file to Supabase Storage
-    const storagePath = `${whatsappNumber}/${file.name}`;
-    const fileBuffer = await file.arrayBuffer();
+    // Convert file to buffer
+    const fileBuffer = Buffer.from(await file.arrayBuffer());
 
-    const { error: uploadError } = await supabase.storage
-      .from("mindsync_storage")
-      .upload(storagePath, fileBuffer, {
-        contentType: file.type,
-        upsert: true, // Allow overwrite if file exists
-      });
-
-    if (uploadError) {
-      console.error("Upload error:", uploadError);
+    // Upload file to Cloudinary
+    const cloudinaryFolder = `mindsync/${whatsappNumber}`;
+    let uploadResult;
+    
+    try {
+      uploadResult = await uploadFileToCloudinary(
+        fileBuffer,
+        file.name,
+        cloudinaryFolder
+      );
+    } catch (uploadError) {
+      console.error("Cloudinary upload error:", uploadError);
       return NextResponse.json(
-        { error: "Gagal upload file ke storage" },
+        { error: "Gagal upload file ke Cloudinary" },
         { status: 500 }
       );
     }
@@ -80,60 +88,37 @@ export async function POST(request: NextRequest) {
         user_whatsapp_number: whatsappNumber,
         file_name: file.name,
         status: "uploaded",
+        file_url: uploadResult.secure_url,
       })
       .select()
       .single();
 
     if (dbError) {
       console.error("Database error:", dbError);
-      
-      // Rollback: delete uploaded file
-      await supabase.storage.from("mindsync_storage").remove([storagePath]);
-      
       return NextResponse.json(
         { error: "Gagal menyimpan metadata dokumen" },
         { status: 500 }
       );
     }
 
-    // Hit webhook untuk notifikasi file upload
-    try {
-      await fetch("https://adzi.magang.pro/webhook-test/file-upload", {
+    // Trigger document processing (async, non-blocking)
+    fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/documents/process`,
+      {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          document_id: documentData.id,
-          whatsapp_number: whatsappNumber,
-          file_name: file.name,
-          file_size: file.size,
-          file_type: file.type,
-          storage_path: storagePath,
-          uploaded_at: documentData.uploaded_at,
-          status: documentData.status,
+          documentId: documentData.id,
+          fileName: file.name,
+          whatsappNumber,
+          fileUrl: uploadResult.secure_url,
+          mimeType: file.type,
         }),
-      });
-    } catch (webhookError) {
-      console.error("Webhook error:", webhookError);
-      // Don't fail the upload if webhook fails
-    }
-
-    // Trigger document processing (async, non-blocking)
-    // Process dilakukan di background agar user tidak perlu menunggu
-    fetch(`${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/documents/process`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        documentId: documentData.id,
-        fileName: file.name,
-        whatsappNumber,
-      }),
-    }).catch((error) => {
+      }
+    ).catch((error) => {
       console.error("Error triggering document processing:", error);
-      // Don't throw error, processing akan di-handle terpisah
     });
 
     return NextResponse.json({
@@ -144,6 +129,7 @@ export async function POST(request: NextRequest) {
         fileName: documentData.file_name,
         status: documentData.status,
         uploadedAt: documentData.uploaded_at,
+        fileUrl: uploadResult.secure_url,
       },
     });
   } catch (error) {
@@ -154,4 +140,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

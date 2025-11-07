@@ -1,0 +1,17 @@
+{
+  "name": "Mindsync",
+  "short_name": "Mindsync",
+  "description": "AI-powered document management and chat assistant",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3b82f6",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}
+

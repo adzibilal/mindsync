@@ -33,6 +33,7 @@ CREATE TABLE public.documents_details (
   file_name text NOT NULL,
   status USER-DEFINED NOT NULL DEFAULT 'uploaded'::processing_status,
   uploaded_at timestamp with time zone NOT NULL DEFAULT now(),
+  file_url text,
   CONSTRAINT documents_details_pkey PRIMARY KEY (id),
   CONSTRAINT documents_user_whatsapp_number_fkey FOREIGN KEY (user_whatsapp_number) REFERENCES public.users(whatsapp_number)
 );
