@@ -1,0 +1,11 @@
+10 Opsi Judul Skripsi dengan Fokus pada RAG:
+Fokus pada Implementasi & Optimalisasi: "Implementasi Arsitektur Retrieval-Augmented Generation (RAG) pada Sistem Manajemen Dokumen Berbasis Obrolan untuk Optimalisasi Pencarian Informasi."
+Fokus pada Efisiensi & Konteks: "Peningkatan Efisiensi Pencarian Informasi Kontekstual Menggunakan Metode Retrieval-Augmented Generation (RAG) pada Aplikasi Manajemen Pengetahuan Pribadi."
+Fokus pada Pengalaman Pengguna (UX): "Analisis Pengaruh Penerapan Retrieval-Augmented Generation (RAG) terhadap Pengalaman Pengguna dalam Interaksi Bahasa Alami dengan Basis Data Dokumen."
+Fokus pada Masalah Teknis (Mengurangi Kesalahan AI): "Perancangan Sistem Tanya Jawab Dokumen Cerdas dengan Memanfaatkan Model Retrieval-Augmented Generation (RAG) untuk Mengurangi Halusinasi Informasi."
+Fokus pada Studi Kasus & Konsep: "Penerapan Model Retrieval-Augmented Generation (RAG) untuk Membangun Sistem 'Second Brain' yang Adaptif (Studi Kasus: Purwarupa Aplikasi Mindsync)."
+Fokus pada Evaluasi & Kinerja: "Evaluasi Kinerja Metode Retrieval-Augmented Generation (RAG) dalam Menjawab Kueri Kompleks pada Kumpulan Dokumen Tidak Terstruktur."
+Fokus pada Produktivitas & Aplikasi Praktis: "Pengembangan Sistem Manajemen Dokumen Berbasis Obrolan Menggunakan Teknologi Retrieval-Augmented Generation (RAG) untuk Meningkatkan Produktivitas Kerja."
+Fokus pada Personalisasi: "Personalisasi Respon pada Asisten Virtual Dokumen Melalui Implementasi Arsitektur Retrieval-Augmented Generation (RAG)."
+Fokus Komparatif (Membandingkan Metode): "Studi Komparatif Akurasi Pencarian Informasi Antara Metode Berbasis Vektor dengan Retrieval-Augmented Generation (RAG) pada Platform Mindsync."
+Fokus pada Desain Sistem: "Desain dan Pembangunan Purwarupa Sistem Manajemen Pengetahuan Interaktif dengan Arsitektur Retrieval-Augmented Generation (RAG)."
